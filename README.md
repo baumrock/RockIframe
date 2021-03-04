@@ -29,6 +29,19 @@ $wire->addHookAfter("ProcessPageEdit::buildForm", function($event) {
 
 ![img](https://i.imgur.com/9e5KvTY.png)
 
+```php
+$wire->addHookAfter("ProcessPageEdit::buildForm", function($event) {
+  $page = $event->process->getPage();
+  if($page->template !== 'mypagetemplate') return;
+
+  /** @var RockIframe $iframe */
+  $iframe = $this->wire->modules->get('RockIframe');
+  if($iframe) $iframe->show("http://www.example.com");
+});
+```
+
+![img](https://i.imgur.com/a8aEQIs.png)
+
 ## Ideas & Notes
 
 PDF preview relies on the browser's capability to preview PDFs. Also at the moment there are no checks which content is thrown to the iframe as source. For images for example we could use https://leafletjs.com/examples/crs-simple/crs-simple.html to enable panning & zooming on the image. For better browsersupport of PDF we could use https://mozilla.github.io/pdf.js/web/viewer.html;
