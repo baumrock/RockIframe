@@ -45,3 +45,5 @@ $wire->addHookAfter("ProcessPageEdit::buildForm", function($event) {
 ## Ideas & Notes
 
 PDF preview relies on the browser's capability to preview PDFs. Also at the moment there are no checks which content is thrown to the iframe as source. For images for example we could use https://leafletjs.com/examples/crs-simple/crs-simple.html to enable panning & zooming on the image. For better browsersupport of PDF we could use https://mozilla.github.io/pdf.js/web/viewer.html;
+
+Mobile view is not yet taken care of... Ideas or help welcome - but I'm using it for desktop-only and backend-only apps at the moment.
