@@ -12,7 +12,7 @@ class RockIframe extends WireData implements Module {
   public static function getModuleInfo() {
     return [
       'title' => 'RockIframe',
-      'version' => '1.0.1',
+      'version' => '1.0.2',
       'summary' => 'Iframe Sidebar for the ProcessWire page edit screen',
       // must be true, not template=admin!
       // otherwise the pageview hook will not fire
@@ -25,9 +25,11 @@ class RockIframe extends WireData implements Module {
   }
 
   public function init() {
-    $this->addHookAfter("ProcessPageView::execute", $this, "addIframe");
     $url = $this->config->urls($this)."RockIframe.css";
     $this->style = "<link type='text/css' href='$url' rel='stylesheet'>";
+
+    $this->addHookAfter("ProcessPageView::execute", $this, "addIframe");
+    $this->addHookAfter("/rockiframeleaflet/", $this, "renderLeaflet");
   }
 
   public function addIframe(HookEvent $event) {
@@ -55,6 +57,36 @@ class RockIframe extends WireData implements Module {
       return $file->url."?m=".$file->filemtime;
     }
     return $data;
+  }
+
+  /**
+   * Show image file in a leaflet map viewer
+   * @return void
+   */
+  public function leaflet($img, $x = 1000, $y = 1000) {
+    $config = $this->wire->config;
+    $img = str_replace($config->paths->root, $config->urls->root, $img);
+    $this->frame = "<iframe src='/rockiframeleaflet/?img=$img&x=$x&y=$y' class='RockIframe'></iframe>";
+  }
+
+  /**
+   * Render the leaflet viewer
+   * @return string
+   */
+  public function renderLeaflet(HookEvent $event) {
+    // add a runtime flag to the page object
+    // this is for apps where all frontend requests are redirected to the backend
+    // checking for this page property makes it possible to prevent redirect
+    $page = $event->wire->page;
+    $page->rockiframeleaflet = true;
+    $page->title = 'RockIframe Leaflet Viewer';
+
+    $path = $this->wire->config->paths($this);
+    return $this->wire->files->render($path."leaflet/viewer.php", [
+      'img' => $this->wire->input->get('img', 'string'),
+      'x' => $this->wire->input->get('x', 'int'),
+      'y' => $this->wire->input->get('y', 'int'),
+    ]);
   }
 
   public function show($data) {
