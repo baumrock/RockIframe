@@ -21,10 +21,15 @@
 <body>
   <div id='map'></div>
   <script>
-    var map = L.map('map', { crs: L.CRS.Simple });
+    var map = L.map('map', {
+      crs: L.CRS.Simple,
+      minZoom: <?= $minZoom ?>,
+      maxZoom: <?= $maxZoom ?>
+    });
     var bounds = [[0,0], [<?= $y ?>,<?= $x ?>]];
     var image = L.imageOverlay('<?= $img ?>', bounds).addTo(map);
     map.fitBounds(bounds);
+    <?php if(isset($zoom)) echo "map.setZoom($zoom);"; ?>
   </script>
 </body>
 </html>

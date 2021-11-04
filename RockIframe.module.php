@@ -12,7 +12,7 @@ class RockIframe extends WireData implements Module {
   public static function getModuleInfo() {
     return [
       'title' => 'RockIframe',
-      'version' => '1.0.2',
+      'version' => '1.0.3',
       'summary' => 'Iframe Sidebar for the ProcessWire page edit screen',
       // must be true, not template=admin!
       // otherwise the pageview hook will not fire
@@ -63,10 +63,23 @@ class RockIframe extends WireData implements Module {
    * Show image file in a leaflet map viewer
    * @return void
    */
-  public function leaflet($img, $x = 1000, $y = 1000) {
+  public function leaflet($img, $options = []) {
+    $opt = $this->wire(new WireData()); /** @var WireData $opt */
+    $opt->setArray([
+      'x' => 1000,
+      'y' => 1000,
+      'minZoom' => 0,
+      'maxZoom' => 12,
+      'zoom' => 0,
+    ]);
+    $opt->setArray($options);
+
+    $optstr = '';
+    foreach($opt->getArray() as $k=>$v) $optstr .= "&$k=$v";
+
     $config = $this->wire->config;
     $img = str_replace($config->paths->root, $config->urls->root, $img);
-    $this->frame = "<iframe src='/rockiframeleaflet/?img=$img&x=$x&y=$y' class='RockIframe'></iframe>";
+    $this->frame = "<iframe src='/rockiframeleaflet/?img=$img{$optstr}' class='RockIframe'></iframe>";
   }
 
   /**
@@ -81,11 +94,18 @@ class RockIframe extends WireData implements Module {
     $page->rockiframeleaflet = true;
     $page->title = 'RockIframe Leaflet Viewer';
 
+    $img = $this->wire->input->get('img', 'string');
+    $file = $this->wire->config->paths->root.ltrim($img, "/");
+    if(is_file($file)) $img .= "?m=".filemtime($file);
+
     $path = $this->wire->config->paths($this);
     return $this->wire->files->render($path."leaflet/viewer.php", [
-      'img' => $this->wire->input->get('img', 'string'),
+      'img' => $img,
       'x' => $this->wire->input->get('x', 'int'),
       'y' => $this->wire->input->get('y', 'int'),
+      'minZoom' => $this->wire->input->get('minZoom', 'int'),
+      'maxZoom' => $this->wire->input->get('maxZoom', 'int'),
+      'zoom' => $this->wire->input->get('zoom', 'int'),
     ]);
   }
 
