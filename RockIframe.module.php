@@ -12,7 +12,7 @@ class RockIframe extends WireData implements Module {
   public static function getModuleInfo() {
     return [
       'title' => 'RockIframe',
-      'version' => '1.0.0',
+      'version' => '1.0.1',
       'summary' => 'Iframe Sidebar for the ProcessWire page edit screen',
       // must be true, not template=admin!
       // otherwise the pageview hook will not fire
@@ -37,12 +37,6 @@ class RockIframe extends WireData implements Module {
     $event->return = $html;
   }
 
-  public function show($data) {
-    $url = $this->getUrl($data);
-    if(!$url) return;
-    $this->frame = "<iframe src='$url' class='RockIframe'></iframe>";
-  }
-
   public function getUrl($data) {
     $config = $this->wire->config;
     if(is_file($data)) {
@@ -62,4 +56,15 @@ class RockIframe extends WireData implements Module {
     }
     return $data;
   }
+
+  public function show($data) {
+    $url = $this->getUrl($data);
+    if(!$url) return;
+    $this->frame = "<iframe src='$url' class='RockIframe'></iframe>";
+  }
+
+  public function showUrl($url) {
+    $this->frame = "<iframe src='$url' class='RockIframe'></iframe>";
+  }
+
 }
