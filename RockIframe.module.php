@@ -82,15 +82,23 @@ class RockIframe extends WireData implements Module
       'minZoom' => 0,
       'maxZoom' => 12,
       'zoom' => 0,
+      'raw' => false,
     ]);
     $opt->setArray($options);
 
     $optstr = '';
-    foreach ($opt->getArray() as $k => $v) $optstr .= "&$k=$v";
+    foreach ($opt->getArray() as $k => $v) {
+      if ($k == 'raw') continue;
+      $optstr .= "&$k=$v";
+    }
 
     $config = $this->wire->config;
     $img = str_replace($config->paths->root, $config->urls->root, $img);
-    $this->frame = "<iframe src='/rockiframeleaflet/?img=$img{$optstr}' class='RockIframe'></iframe>";
+    $markup = "<iframe src='/rockiframeleaflet/?img=$img{$optstr}' class='RockIframe'></iframe>";
+
+    if ($opt->raw) return $markup;
+
+    $this->frame = $markup;
   }
 
   /**
