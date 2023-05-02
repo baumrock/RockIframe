@@ -83,6 +83,7 @@ class RockIframe extends WireData implements Module
       'maxZoom' => 12,
       'zoom' => 0,
       'raw' => false,
+      'ts' => false, // cache busting timestamp
     ]);
     $opt->setArray($options);
 
