@@ -49,7 +49,6 @@
         lng: center.lng,
         zoom: map.getZoom(),
       });
-      console.log(json);
       localStorage.setItem('map-flyto', json);
     });
   </script>
